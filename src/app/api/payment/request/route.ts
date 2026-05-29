@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { isConfigured, requestPayment } from '@/lib/payment/linepay';
+import { isConfigured, createCheckout } from '@/lib/payment/square';
 import { PRODUCT } from '@/data/product';
 
 interface Body {
@@ -36,25 +36,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ configured: false });
     }
 
-    const confirmUrl = `${BASE}/api/payment/confirm`;
-    const cancelUrl = `${BASE}/result/${serial}/detail?token=${encodeURIComponent(token)}`;
+    const redirectUrl = `${BASE}/api/payment/confirm`;
 
-    const { paymentUrl, transactionId } = await requestPayment({
+    const { url, squareOrderId } = await createCheckout({
       amount: PRODUCT.price,
       currency: PRODUCT.currency,
       orderId: serial,
       productName: PRODUCT.name,
-      confirmUrl,
-      cancelUrl,
+      redirectUrl,
     });
 
-    // transactionId を保存（confirm時の照合・冪等性のため）
+    // Square の order_id を保存（confirm時の照合・冪等性のため）
     await supabase
       .from('diagnoses')
-      .update({ payment_ref: transactionId })
+      .update({ payment_ref: squareOrderId })
       .eq('serial', serial);
 
-    return NextResponse.json({ configured: true, paymentUrl });
+    return NextResponse.json({ configured: true, paymentUrl: url });
   } catch (err) {
     console.error('payment/request error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

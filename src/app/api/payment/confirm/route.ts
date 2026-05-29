@@ -1,26 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { confirmPayment } from '@/lib/payment/linepay';
-import { PRODUCT } from '@/data/product';
+import { getOrderStatus } from '@/lib/payment/square';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL || 'https://spirituals.vercel.app';
 
-// LINE Pay は confirmUrl へ transactionId と orderId 付きでリダイレクトしてくる（GET）。
+// Square はホスト型決済の完了後、redirect_url に orderId 等を付けてGETで戻す。
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
-  const transactionId = url.searchParams.get('transactionId');
-  const orderId = url.searchParams.get('orderId'); // = serial
+  const squareOrderId = url.searchParams.get('orderId');
 
-  if (!transactionId || !orderId) {
+  if (!squareOrderId) {
     return NextResponse.redirect(`${BASE}/error/not-found`);
   }
 
   try {
     const supabase = createServerClient();
+    // request時に payment_ref へ保存した Square order_id で診断行を特定
     const { data, error } = await supabase
       .from('diagnoses')
       .select('serial, token, paid_at, payment_ref')
-      .eq('serial', orderId)
+      .eq('payment_ref', squareOrderId)
       .single();
 
     if (error || !data) {
@@ -34,20 +33,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(detailUrl);
     }
 
-    // transactionId の照合（リクエスト時に保存したものと一致するか）
-    if (data.payment_ref && data.payment_ref !== transactionId) {
-      return NextResponse.redirect(`${BASE}/error/not-found`);
-    }
-
-    const ok = await confirmPayment(transactionId, PRODUCT.price, PRODUCT.currency);
-    if (!ok) {
+    // Square 側で支払い完了しているか検証
+    const status = await getOrderStatus(squareOrderId);
+    if (!status.paid) {
       return NextResponse.redirect(detailUrl);
     }
 
     await supabase
       .from('diagnoses')
-      .update({ paid_at: new Date().toISOString(), payment_ref: transactionId })
-      .eq('serial', orderId);
+      .update({ paid_at: new Date().toISOString() })
+      .eq('serial', data.serial);
 
     return NextResponse.redirect(detailUrl);
   } catch (err) {
