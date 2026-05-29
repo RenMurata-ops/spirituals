@@ -1,26 +1,286 @@
 @import "tailwindcss";
 
+/* ============================================
+   Spirituals Design System
+   Inspired by Frieren's ethereal aesthetic
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ベースカラー（ライト/淡いベージュ系） */
+  --bg-primary: #faf9f7;
+  --bg-secondary: #f5f3f0;
+  --bg-tertiary: #ebe8e4;
+  --bg-card: #ffffff;
+
+  /* アクセントカラー（くすみブラウン/ゴールド系） */
+  --accent-primary: #8b7355;
+  --accent-secondary: #a69076;
+  --accent-tertiary: #c4b5a0;
+  --accent-highlight: #d4c4a8;
+
+  /* 互換性のため旧名も維持 */
+  --mystic-purple: #8b7355;
+  --electric-blue: #a69076;
+  --sacred-gold: #c9a962;
+  --breath-teal: #7a9e9e;
+
+  /* テキストカラー */
+  --text-primary: #2d2a26;
+  --text-secondary: #6b6560;
+  --text-muted: #9a958f;
+
+  /* セマンティック */
+  --warning: #c9a962;
+  --error: #c47070;
+  --success: #7a9e7a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* カラーパレット */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-card: var(--bg-card);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-mystic-purple: var(--mystic-purple);
+  --color-electric-blue: var(--electric-blue);
+  --color-sacred-gold: var(--sacred-gold);
+  --color-breath-teal: var(--breath-teal);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-success: var(--success);
+
+  /* フォント */
+  --font-sans: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Hiragino Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* アニメーション（控えめ） */
+  --animate-breathe: breathe 8s ease-in-out infinite;
+  --animate-glow: subtle-glow 4s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================
+   Base Styles
+   ============================================ */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* ============================================
+   Gradient Classes
+   ============================================ */
+
+/* ヒーロー背景（淡いグラデーション） */
+.gradient-hero {
+  background: linear-gradient(180deg, #faf9f7 0%, #f5f3f0 50%, #ebe8e4 100%);
+}
+
+/* ボタン（控えめなグラデーション） */
+.gradient-button {
+  background: linear-gradient(135deg, #8b7355 0%, #a69076 100%);
+}
+
+.gradient-button:hover {
+  background: linear-gradient(135deg, #9a826a 0%, #b5a088 100%);
+}
+
+/* スコアバー */
+.gradient-score {
+  background: linear-gradient(90deg, #8b7355 0%, #a69076 50%, #c4b5a0 100%);
+}
+
+/* カードグラデーション */
+.gradient-card {
+  background: linear-gradient(180deg, #ffffff 0%, #faf9f7 100%);
+}
+
+/* 神秘的なオーラ（控えめ） */
+.gradient-mystic {
+  background: radial-gradient(ellipse at center, rgba(139, 115, 85, 0.08) 0%, transparent 70%);
+}
+
+/* ============================================
+   Animations（控えめ・繊細）
+   ============================================ */
+
+/* 呼吸パルス（控えめ） */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+.animate-breathe {
+  animation: breathe 8s ease-in-out infinite;
+}
+
+/* 微細なグロー */
+@keyframes subtle-glow {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.1);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(139, 115, 85, 0.15);
+  }
+}
+.animate-glow {
+  animation: subtle-glow 4s ease-in-out infinite;
+}
+
+/* フロート（緩やか） */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* シマー（控えめ） */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 115, 85, 0.05) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* フェードイン */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-tertiary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-tertiary) var(--bg-secondary);
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+/* 控えめなシャドウ効果 */
+.glow-purple,
+.subtle-shadow {
+  box-shadow: 0 2px 12px rgba(139, 115, 85, 0.12);
+}
+
+.glow-blue {
+  box-shadow: 0 2px 12px rgba(166, 144, 118, 0.12);
+}
+
+.glow-gold {
+  box-shadow: 0 2px 12px rgba(201, 169, 98, 0.15);
+}
+
+.glow-teal {
+  box-shadow: 0 2px 12px rgba(122, 158, 158, 0.12);
+}
+
+/* テキストグラデーション */
+.text-gradient {
+  background: linear-gradient(135deg, #8b7355 0%, #a69076 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ガラスモーフィズム（控えめ） */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+/* カード基本スタイル */
+.card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid rgba(139, 115, 85, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card:hover {
+  border-color: rgba(139, 115, 85, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   Additional Utility Classes
+   ============================================ */
+
+/* セクション区切り */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-tertiary) 50%, transparent 100%);
+}
+
+/* ホバー時のトランジション */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
